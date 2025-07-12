@@ -1,0 +1,24 @@
+---------------------------------------------------
+Here are the ownership and the certification details
+of the WONDER 2.1
+---------------------------------------------------
+
+app_name - 						WONDER
+app_alias - 					wonder
+app_author_name - 				My Company
+app_author_organizational - 	My Company
+app_author_organization - 		My Company
+app_author_locality - 			My Company
+app_author_state - 				Jawa Timur
+app_author_country - 			Indonesia
+app_password - 					GwqkpMWZe2Um
+app_versionName - 				versionName "2.1"
+app_versionCode - 				201
+
+---------------------------------------------------
+The certification was created by WebIntoApp.com at
+the Monday 30th of June 2025 02:19:24 PM
+
+https://webintoapp.com
+---------------------------------------------------
+

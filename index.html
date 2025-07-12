@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WONDER - Earthquake Monitoring</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for creating charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- MQTT.js for MQTT communication -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/4.3.7/mqtt.min.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .neumorphic {
+            border-radius: 20px;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            box-shadow: 9px 9px 16px #bec3c9, 
+                        -9px -9px 16px #ffffff;
+        }
+        .neumorphic-inset {
+            border-radius: 20px;
+            background: #ffffff;
+            box-shadow: inset 8px 8px 16px #d9d9d9,
+                       inset -8px -8px 16px #ffffff;
+        }
+        .seven-segment {
+            font-family: monospace;
+            font-weight: normal;
+            font-style: italic;
+            color: #3b82f6;
+        }
+        .log-container {
+            height: 200px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #3b82f6 #f0f0f0;
+        }
+        .log-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .log-container::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 3px;
+        }
+        .log-container::-webkit-scrollbar-thumb {
+            background-color: #3b82f6;
+            border-radius: 3px;
+        }
+        .cube {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(-20deg) rotateY(-30deg);
+            transition: transform 0.5s;
+        }
+        .face {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border: 2px solid #e5e7eb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            color: #111827;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        .front { transform: translateZ(100px); border-color: #3b82f6; }
+        .back { transform: rotateY(180deg) translateZ(100px); }
+        .right { transform: rotateY(90deg) translateZ(100px); border-color: #3b82f6; }
+        .left { transform: rotateY(-90deg) translateZ(100px); }
+        .top { transform: rotateX(90deg) translateZ(100px); }
+        .bottom { transform: rotateX(-90deg) translateZ(100px); border-color: #3b82f6; }
+        .axis-label {
+            position: absolute;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .x-label { top: 10px; left: 50%; transform: translateX(-50%); }
+        .y-label { top: 50%; right: 10px; transform: translateY(-50%); }
+        .z-label { bottom: 10px; left: 50%; transform: translateX(-50%); }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="neumorphic p-6 mb-8 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center mb-4 md:mb-0">
+                <i class="fas fa-earth-americas text-4xl text-blue-500 mr-4"></i>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">WONDER</h1>
+                    <p class="text-gray-600">Wireless Observation for Natural Detection Earthquake Response</p>
+                </div>
+            </div>
+            <div class="flex items-center">
+                <div class="flex flex-col space-y-2">
+                    <div class="flex items-center">
+                        <span class="w-3 h-3 rounded-full mr-2" id="broker-status-indicator"></span>
+                        <span class="text-sm text-gray-600" id="broker-status">Broker: Disconnected</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-3 h-3 rounded-full mr-2" id="client-status-indicator"></span>
+                        <span class="text-sm text-gray-600" id="client-status">Client: Disconnected</span>
+                    </div>
+                </div>
+                <div class="ml-6">
+                    <button id="audio-toggle-btn" class="p-3 rounded-full neumorphic focus:outline-none" title="Unmute">
+                        <i id="audio-icon" class="fas fa-volume-mute text-xl text-gray-600 w-6 text-center"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="flex mb-6 border-b border-gray-200">
+            <button class="tab-btn flex-1 text-center py-2 px-4 font-medium text-gray-600 hover:text-blue-500 focus:outline-none border-b-2 border-transparent hover:border-blue-300 active" data-tab="dashboard">Dashboard</button>
+            <button class="tab-btn flex-1 text-center py-2 px-4 font-medium text-gray-600 hover:text-blue-500 focus:outline-none border-b-2 border-transparent hover:border-blue-300" data-tab="vibration-details">Vibration Details</button>
+            <button class="tab-btn flex-1 text-center py-2 px-4 font-medium text-gray-600 hover:text-blue-500 focus:outline-none border-b-2 border-transparent hover:border-blue-300" data-tab="imu-visual">3D IMU Visual</button>
+            <button class="tab-btn flex-1 text-center py-2 px-4 font-medium text-gray-600 hover:text-blue-500 focus:outline-none border-b-2 border-transparent hover:border-blue-300" data-tab="sensor-graphs">6 Axis Graphs</button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- System Status Card -->
+                <div class="neumorphic p-6">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">System Status</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="neumorphic-inset p-3 text-center">
+                            <p class="text-gray-600 mb-1">WiFi</p>
+                            <div class="flex items-center justify-center">
+                                <span class="w-3 h-3 rounded-full mr-2" id="wifi-status-indicator"></span>
+                                <span id="wifi-status">Disconnected</span>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1" id="wifi-rssi">RSSI: -- dBm</div>
+                        </div>
+                        <div class="neumorphic-inset p-3 text-center">
+                            <p class="text-gray-600 mb-1">Earthquake Event</p>
+                            <div class="flex items-center justify-center">
+                                <span class="w-3 h-3 rounded-full mr-2" id="event-status-indicator"></span>
+                                <span id="event-status">Inactive</span>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1" id="event-level">Level: --</div>
+                        </div>
+                        <div class="neumorphic-inset p-3 text-center">
+                            <p class="text-gray-600 mb-1">Temperature</p>
+                            <div class="seven-segment text-xl" id="temperature">0.00</div>
+                            <div class="text-xs text-gray-500 mt-1">°C</div>
+                        </div>
+                        <div class="neumorphic-inset p-3 text-center">
+                            <p class="text-gray-600 mb-1">Accel Magnitude</p>
+                            <div class="seven-segment text-xl" id="accel-magnitude">0.00</div>
+                            <div class="text-xs text-gray-500 mt-1">m/s²</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Richter Scale Card -->
+                <div class="neumorphic p-6">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Earthquake Intensity</h2>
+                    <div class="flex items-center justify-between">
+                        <div class="text-center">
+                            <p class="text-gray-600 mb-1">Richter Scale</p>
+                            <div class="seven-segment text-5xl" id="richter-scale">0.00</div>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-gray-600 mb-1">Peak-to-Peak</p>
+                            <div class="seven-segment text-5xl" id="peak-to-peak">0.00</div>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-gray-600 mb-1">Status</p>
+                            <div class="text-xl font-semibold" id="earthquake-status">Normal</div>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="h-4 bg-gray-200 rounded-full overflow-hidden">
+                            <div id="intensity-bar" class="h-full bg-gradient-to-r from-blue-400 to-blue-600" style="width: 0%"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>0</span>
+                            <span>2</span>
+                            <span>4</span>
+                            <span>6</span>
+                            <span>8</span>
+                            <span>10</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Data Log Card -->
+            <div class="neumorphic p-6">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Data Log</h2>
+                <div class="neumorphic-inset p-4 log-container" id="data-log">
+                    <div class="text-gray-500 text-sm">Waiting for data...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3D IMU Visual Tab -->
+        <div id="imu-visual" class="tab-content">
+            <div class="neumorphic p-6">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">3D IMU Visualization</h2>
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <div class="mb-6 md:mb-0">
+                        <div class="cube mx-auto">
+                            <div class="face front">
+                                <span class="axis-label x-label">X</span>
+                                <span class="axis-label y-label">Y</span>
+                                <span id="front-value" class="text-xs">0, 0</span>
+                            </div>
+                            <div class="face back">
+                                <span id="back-value" class="text-xs">0, 0</span>
+                            </div>
+                            <div class="face right">
+                                <span class="axis-label z-label">Z</span>
+                                <span class="axis-label y-label">Y</span>
+                                <span id="right-value" class="text-xs">0, 0</span>
+                            </div>
+                            <div class="face left">
+                                <span id="left-value" class="text-xs">0, 0</span>
+                            </div>
+                            <div class="face top">
+                                <span id="top-value" class="text-xs">0, 0</span>
+                            </div>
+                            <div class="face bottom">
+                                <span id="bottom-value" class="text-xs">0, 0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2">
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="neumorphic-inset p-4 text-center">
+                                <p class="text-gray-600 mb-1">Accel X</p>
+                                <div class="seven-segment text-xl" id="accel-x">0.00</div>
+                                <p class="text-xs text-gray-500 mt-1">m/s²</p>
+                            </div>
+                            <div class="neumorphic-inset p-4 text-center">
+                                <p class="text-gray-600 mb-1">Accel Y</p>
+                                <div class="seven-segment text-xl" id="accel-y">0.00</div>
+                                <p class="text-xs text-gray-500 mt-1">m/s²</p>
+                            </div>
+                            <div class="neumorphic-inset p-4 text-center">
+                                <p class="text-gray-600 mb-1">Accel Z</p>
+                                <div class="seven-segment text-xl" id="accel-z">0.00</div>
+                                <p class="text-xs text-gray-500 mt-1">m/s²</p>
+                            </div>
+                            <div class="neumorphic-inset p-4 text-center">
+                                <p class="text-gray-600 mb-1">Gyro X</p>
+                                <div class="seven-segment text-xl" id="gyro-x">0.00</div>
+                                <p class="text-xs text-gray-500 mt-1">°/s</p>
+                            </div>
+                            <div class="neumorphic-inset p-4 text-center">
+                                <p class="text-gray-600 mb-1">Gyro Y</p>
+                                <div class="seven-segment text-xl" id="gyro-y">0.00</div>
+                                <p class="text-xs text-gray-500 mt-1">°/s</p>
+                            </div>
+                            <div class="neumorphic-inset p-4 text-center">
+                                <p class="text-gray-600 mb-1">Gyro Z</p>
+                                <div class="seven-segment text-xl" id="gyro-z">0.00</div>
+                                <p class="text-xs text-gray-500 mt-1">°/s</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sensor Graphs Tab -->
+        <div id="sensor-graphs" class="tab-content">
+            <div class="neumorphic-inset p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Accelerometer Data</h2>
+                <canvas id="accelChart" height="100"></canvas>
+            </div>
+            <div class="neumorphic-inset p-6">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Gyroscope Data</h2>
+                <canvas id="gyroChart" height="100"></canvas>
+            </div>
+        </div>
+
+        <!-- Vibration Details Tab -->
+        <div id="vibration-details" class="tab-content">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="neumorphic p-6">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Vibration Sensor</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="neumorphic-inset p-4">
+                            <p class="text-gray-600 mb-1">SW420 State</p>
+                            <div class="seven-segment text-xl" id="sw420-state">0</div>
+                        </div>
+                        <div class="neumorphic-inset p-4">
+                            <p class="text-gray-600 mb-1">Vibration Detected</p>
+                            <div class="text-xl font-semibold" id="vibration-detected">No</div>
+                        </div>
+                        <div class="neumorphic-inset p-4">
+                            <p class="text-gray-600 mb-1">Vibration Count</p>
+                            <div class="seven-segment text-xl" id="vibration-count">0</div>
+                        </div>
+                        <div class="neumorphic-inset p-4">
+                            <p class="text-gray-600 mb-1">Earthquake Detected</p>
+                            <div class="text-xl font-semibold" id="earthquake-detected">No</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="neumorphic p-6">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">SW1801P Sensor</h2>
+                    <div class="flex flex-col items-center justify-center h-full">
+                        <div class="text-center mb-4">
+                            <p class="text-gray-600 mb-1">Voltage</p>
+                            <div class="seven-segment text-4xl" id="sw1801p-voltage">0.00</div>
+                            <p class="text-xs text-gray-500 mt-1">mV</p>
+                        </div>
+                        <div class="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
+                            <div id="voltage-bar" class="h-full bg-gradient-to-r from-blue-400 to-blue-600" style="width: 0%"></div>
+                        </div>
+                        <div class="flex justify-between w-full text-xs text-gray-500 mt-1">
+                            <span>0V</span>
+                            <span>3.3V</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Scripts Java-->
+    <script>
+        // MQTT Configuration
+        const mqttConfig = {
+            server: "broker.emqx.io",
+            port: 8084, // Using WebSocket port
+            clientId: "web-client-" + Math.random().toString(16).substr(2, 8),
+            imuTopic: "MOCH/SHULTAN/163231040/data",
+            vibrationTopic: "MOCH/SHULTAN/163231040/vibration"
+        };
+
+        // Connect to MQTT broker
+        const client = mqtt.connect(`wss://${mqttConfig.server}:${mqttConfig.port}/mqtt`, {
+            clientId: mqttConfig.clientId,
+            clean: true,
+            reconnectPeriod: 1000,
+            connectTimeout: 30 * 1000
+        });
+
+        // MQTT Connection Events
+        client.on('connect', () => {
+            updateConnectionStatus(true, 'broker');
+            client.subscribe([mqttConfig.imuTopic, mqttConfig.vibrationTopic], (err) => {
+                if (!err) {
+                    addToLog("Subscribed to topics successfully");
+                } else {
+                    addToLog("Error subscribing to topics: " + err);
+                }
+            });
+        });
+
+        client.on('reconnect', () => {
+            updateConnectionStatus(false, 'broker');
+            addToLog("Attempting to reconnect to MQTT broker...");
+        });
+
+        client.on('close', () => {
+            updateConnectionStatus(false, 'broker');
+            addToLog("Disconnected from MQTT broker");
+        });
+
+        client.on('error', (err) => {
+            addToLog("MQTT Error: " + err.message);
+        });
+
+        client.on('offline', () => {
+            updateConnectionStatus(false, 'broker');
+            addToLog("MQTT client is offline");
+        });
+
+        client.on('message', (topic, message) => {
+            try {
+                const data = JSON.parse(message.toString());
+                
+                if (topic === mqttConfig.imuTopic) {
+                    processImuData(data);
+                } else if (topic === mqttConfig.vibrationTopic) {
+                    processVibrationData(data);
+                }
+                
+                addToLog(`Data received from ${topic.split('/').pop()}: ${message.toString()}`);
+            } catch (e) {
+                addToLog("Error parsing message: " + e.message);
+            }
+        });
+
+        // Audio Alert
+        let beepInterval = null;
+        let isMuted = true;
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const audioToggleButton = document.getElementById('audio-toggle-btn');
+        const audioIcon = document.getElementById('audio-icon');
+
+        audioToggleButton.addEventListener('click', () => {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            isMuted = !isMuted;
+            updateAudioIcon();
+        });
+
+        function updateAudioIcon() {
+            if (isMuted) {
+                audioIcon.classList.remove('fa-volume-up');
+                audioIcon.classList.add('fa-volume-mute');
+                audioToggleButton.setAttribute('title', 'Unmute');
+                audioToggleButton.classList.add('neumorphic');
+                audioToggleButton.classList.remove('neumorphic-inset');
+            } else {
+                audioIcon.classList.remove('fa-volume-mute');
+                audioIcon.classList.add('fa-volume-up');
+                audioToggleButton.setAttribute('title', 'Mute');
+                audioToggleButton.classList.add('neumorphic-inset');
+                audioToggleButton.classList.remove('neumorphic');
+            }
+        }
+
+        function playBeep() {
+            if (audioCtx.state === 'suspended' || isMuted) return;
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.type = 'sine';
+            oscillator.frequency.value = 880; // A5 note
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.02);
+            oscillator.start(audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.2);
+            oscillator.stop(audioCtx.currentTime + 0.2);
+        }
+
+        function startBeeping() {
+            if (!beepInterval && !isMuted) {
+                playBeep();
+                beepInterval = setInterval(playBeep, 1000); // Beep every second
+            }
+        }
+
+        function stopBeeping() {
+            if (beepInterval) {
+                clearInterval(beepInterval);
+                beepInterval = null;
+            }
+        }
+
+        // Tab Navigation
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active', 'border-blue-500', 'text-blue-500'));
+                btn.classList.add('active', 'border-blue-500', 'text-blue-500');
+                
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Initialize Charts
+        const accelCtx = document.getElementById('accelChart').getContext('2d');
+        const gyroCtx = document.getElementById('gyroChart').getContext('2d');
+
+        const accelChart = new Chart(accelCtx, {
+            type: 'line',
+            data: {
+                labels: Array(20).fill(''),
+                datasets: [
+                    { label: 'X', data: [], borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', tension: 0.3 },
+                    { label: 'Y', data: [], borderColor: '#f6a823', backgroundColor: 'rgba(245, 158, 11, 0.1)', tension: 0.3 },
+                    { label: 'Z', data: [], borderColor: '#facc15', backgroundColor: 'rgba(250, 204, 21, 0.1)', tension: 0.3 }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: false, title: { display: true, text: 'Acceleration (m/s²)' } }
+                },
+                animation: { duration: 0 },
+                interaction: { intersect: false, mode: 'index' }
+            }
+        });
+
+        const gyroChart = new Chart(gyroCtx, {
+            type: 'line',
+            data: {
+                labels: Array(20).fill(''),
+                datasets: [
+                    { label: 'X', data: [], borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', tension: 0.3 },
+                    { label: 'Y', data: [], borderColor: '#f6a823', backgroundColor: 'rgba(245, 158, 11, 0.1)', tension: 0.3 },
+                    { label: 'Z', data: [], borderColor: '#facc15', backgroundColor: 'rgba(250, 204, 21, 0.1)', tension: 0.3 }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: false, title: { display: true, text: 'Rotation (°/s)' } }
+                },
+                animation: { duration: 0 },
+                interaction: { intersect: false, mode: 'index' }
+            }
+        });
+
+        // Data Processing Functions
+        function processImuData(data) {
+            // Update connection status
+            updateConnectionStatus(data.mqttConnected, 'client');
+            updateConnectionStatus(data.wifiConnected, 'wifi');
+            
+            // Update main dashboard values
+            document.getElementById('richter-scale').textContent = data.richterScale.toFixed(2);
+            document.getElementById('peak-to-peak').textContent = data.maxPeakToPeak.toFixed(2);
+            
+            // Update intensity bar
+            const intensityPercentage = Math.min(data.richterScale * 10, 100);
+            document.getElementById('intensity-bar').style.width = `${intensityPercentage}%`;
+            
+            // Update earthquake status
+            const statusElement = document.getElementById('earthquake-status');
+            const eventIndicator = document.getElementById('event-status-indicator');
+            
+            if (data.earthquakeEventActive) {
+                statusElement.textContent = 'Earthquake!';
+                statusElement.className = 'text-xl font-semibold text-red-500';
+                eventIndicator.className = 'w-3 h-3 rounded-full mr-2 bg-red-500 animate-pulse';
+                document.getElementById('event-status').textContent = 'Active';
+                document.getElementById('event-level').textContent = `Level: ${data.earthquakeLevel}`;
+                startBeeping();
+            } else {
+                statusElement.textContent = 'Normal';
+                statusElement.className = 'text-xl font-semibold text-green-500';
+                eventIndicator.className = 'w-3 h-3 rounded-full mr-2 bg-green-500';
+                document.getElementById('event-status').textContent = 'Inactive';
+                document.getElementById('event-level').textContent = 'Level: --';
+                stopBeeping();
+            }
+            
+            // Update system status
+            document.getElementById('temperature').textContent = data.temp.toFixed(2);
+            document.getElementById('accel-magnitude').textContent = data.accelMagnitude.toFixed(2);
+            document.getElementById('wifi-rssi').textContent = `RSSI: ${data.wifiRSSI} dBm`;
+            
+            // Update IMU values
+            document.getElementById('accel-x').textContent = data.accelX.toFixed(2);
+            document.getElementById('accel-y').textContent = data.accelY.toFixed(2);
+            document.getElementById('accel-z').textContent = data.accelZ.toFixed(2);
+            document.getElementById('gyro-x').textContent = data.gyroX.toFixed(2);
+            document.getElementById('gyro-y').textContent = data.gyroY.toFixed(2);
+            document.getElementById('gyro-z').textContent = data.gyroZ.toFixed(2);
+            
+            // Update 3D cube values
+            document.getElementById('front-value').textContent = `${data.accelX.toFixed(1)}, ${data.accelY.toFixed(1)}`;
+            document.getElementById('right-value').textContent = `${data.accelY.toFixed(1)}, ${data.accelZ.toFixed(1)}`;
+            document.getElementById('bottom-value').textContent = `${data.accelX.toFixed(1)}, ${data.accelZ.toFixed(1)}`;
+            
+            // Rotate cube based on acceleration
+            const cube = document.querySelector('.cube');
+            const tiltX = Math.min(Math.max(data.accelX * 10, -45), 45);
+            const tiltY = Math.min(Math.max(data.accelY * 10, -45), 45);
+            cube.style.transform = `rotateX(${-tiltX}deg) rotateY(${tiltY}deg)`;
+            
+            // Update charts
+            updateChart(accelChart, [data.accelX, data.accelY, data.accelZ]);
+            updateChart(gyroChart, [data.gyroX, data.gyroY, data.gyroZ]);
+        }
+
+        function processVibrationData(data) {
+            document.getElementById('sw420-state').textContent = data.sw420;
+            document.getElementById('vibration-detected').textContent = data.vibrationDetected ? 'Yes' : 'No';
+            document.getElementById('vibration-count').textContent = data.vibrationCount;
+            document.getElementById('earthquake-detected').textContent = data.earthquakeDetected ? 'Yes' : 'No';
+            document.getElementById('sw1801p-voltage').textContent = data.sw1801p_voltage.toFixed(2);
+            
+            // Update voltage bar
+            const voltagePercentage = (data.sw1801p_voltage / 3300) * 100;
+            document.getElementById('voltage-bar').style.width = `${voltagePercentage}%`;
+        }
+
+        // Helper Functions
+        function updateConnectionStatus(connected, type) {
+            const indicator = document.getElementById(`${type}-status-indicator`);
+            const status = document.getElementById(`${type}-status`);
+            
+            if (connected) {
+                indicator.className = 'w-3 h-3 rounded-full mr-2 bg-green-500';
+                status.textContent = type === 'broker' ? 'Broker: Connected' : 
+                                    type === 'client' ? 'Client: Connected' : 'Connected';
+            } else {
+                indicator.className = 'w-3 h-3 rounded-full mr-2 bg-red-500';
+                status.textContent = type === 'broker' ? 'Broker: Disconnected' : 
+                                    type === 'client' ? 'Client: Disconnected' : 'Disconnected';
+            }
+        }
+
+        function addToLog(message) {
+            const logElement = document.getElementById('data-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = 'mb-1';
+            logEntry.innerHTML = `<span class="text-blue-500">[${timestamp}]</span> ${message}`;
+            
+            logElement.appendChild(logEntry);
+            
+            // Auto-scroll to bottom
+            logElement.scrollTop = logElement.scrollHeight;
+            
+            // Limit log entries to 100
+            if (logElement.children.length > 100) {
+                logElement.removeChild(logElement.children[0]);
+            }
+        }
+
+        function updateChart(chart, newData) {
+            // Shift and add new data to each dataset
+            chart.data.datasets.forEach((dataset, i) => {
+                dataset.data.push(newData[i]);
+                if (dataset.data.length > 20) {
+                    dataset.data.shift();
+                }
+            });
+            
+            chart.update();
+        }
+
+        // Initial setup
+        updateAudioIcon();
+        addToLog("System initialized. Connecting to MQTT broker...");
+    </script>
+</body>
+</html>
