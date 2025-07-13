@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌍 WONDER 2.1
+# 🌍 WONDER v2.1
 ## Wireless Observation for Natural Detection Earthquake Response
 
 > **IoT-based earthquake monitoring system with real-time detection, analysis, and alerting capabilities**
@@ -12,7 +12,7 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen?style=for-the-badge)]()
 
-[🚀 Quick Start](#-quick-start) • [📋 Features](#-features) • [🛠️ Installation](#️-installation) • [📊 Architecture](#-system-architecture) • [🔬 Technical Details](#-technical-specifications) • [🔧 Hardware Build](#-hardware-build)
+[🚀 Quick Start](#-quick-start) • [📋 Features](#-features) • [🛠️ Installation](#️-installation) • [📊 Architecture](#-system-architecture) • [🔬 Technical Details](#-technical-specifications)
 
 ---
 
