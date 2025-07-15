@@ -161,10 +161,8 @@ if (window.mqttHelper && window.uiHelper && window.charts) {
     const gyroY = typeof data.gyroY === 'number' ? data.gyroY : 0;
     const gyroZ = typeof data.gyroZ === 'number' ? data.gyroZ : 0;
     const wifiConnected = typeof data.wifiConnected === 'boolean' ? data.wifiConnected : false;
-    const mqttConnected = typeof data.mqttConnected === 'boolean' ? data.mqttConnected : false;
     const wifiRSSI = typeof data.wifiRSSI === 'number' ? data.wifiRSSI : 0;
 
-    window.uiHelper.updateConnectionStatus(mqttConnected, 'client');
     window.uiHelper.updateConnectionStatus(wifiConnected, 'wifi');
     document.getElementById('richter-scale').textContent = richterScale.toFixed(2);
     document.getElementById('peak-to-peak').textContent = maxPeakToPeak.toFixed(2);
@@ -216,6 +214,7 @@ if (window.mqttHelper && window.uiHelper && window.charts) {
     const voltagePercentage = (data.sw1801p_voltage / 3300) * 100;
     document.getElementById('voltage-bar').style.width = `${voltagePercentage}%`;
   }
+  handleClientMessage();
   
   // Subscribe to topics with current localStorage values
   window.mqttHelper.subscribeTopics(processImuData, processVibrationData, window.uiHelper.addToLog);
