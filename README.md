@@ -404,7 +404,7 @@ Akses di: http://localhost:8000/login.html
 
 ### 📊 **Data Structure**
 
-#### 🔍 **Full System/IMU-Only - IMU Data Topic** (`YOUR_MQTT_TOPICS/data`)
+#### 🔍 **Full System - IMU Data Topic** (`YOUR_MQTT_TOPICS/data`)
 ```json
 {
   "accelX": 0.12,
@@ -422,6 +422,19 @@ Akses di: http://localhost:8000/login.html
   "wifiConnected": true,
   "mqttConnected": true,
   "wifiRSSI": -45
+}
+```
+
+#### 🔍 **Only IMU - IMU Data Topic** (`YOUR_MQTT_TOPICS/data`)
+```json
+{
+  "accelX": 0.12,
+  "accelY": -0.05,
+  "accelZ": 9.85,
+  "gyroX": 0.01,
+  "gyroY": 0.02,
+  "gyroZ": -0.01,
+  "temp": 25.6,
 }
 ```
 

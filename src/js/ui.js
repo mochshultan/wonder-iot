@@ -55,4 +55,22 @@ function updateChart(chart, newData) {
   chart.update();
 }
 
-window.uiHelper = { updateConnectionStatus, addToLog, playBeep, updateChart }; 
+window.uiHelper = {
+  updateConnectionStatus: updateConnectionStatus,
+  addToLog: function(msg) {
+    const log = document.getElementById('data-log');
+    if (!log) return;
+    // Remove 'Waiting for data...' if present
+    const waiting = log.querySelector('.text-gray-500');
+    if (waiting) waiting.remove();
+    // Add new log entry
+    const div = document.createElement('div');
+    div.className = 'text-xs text-gray-700 mb-1';
+    div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    log.appendChild(div);
+    // Auto-scroll to bottom
+    log.scrollTop = log.scrollHeight;
+  },
+  playBeep: playBeep,
+  updateChart: updateChart,
+}; 

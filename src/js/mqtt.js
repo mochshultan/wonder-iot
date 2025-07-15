@@ -18,7 +18,6 @@ function subscribeTopics(onImu, onVibration, onLog) {
   client.on('connect', () => {
     console.log('[MQTT] Connected!');
     window.uiHelper.updateConnectionStatus(true, 'broker', false);
-    window.uiHelper.updateConnectionStatus(true, 'client', false);
     
     // Subscribe to topics dynamically
     if (mqttConfig.imuTopic) {
@@ -36,28 +35,24 @@ function subscribeTopics(onImu, onVibration, onLog) {
   client.on('reconnect', () => {
     console.log('[MQTT] Reconnecting...');
     window.uiHelper.updateConnectionStatus(false, 'broker', true);
-    window.uiHelper.updateConnectionStatus(false, 'client', true);
     if (onLog) onLog('Attempting to reconnect to MQTT broker...');
   });
   
   client.on('close', () => {
     console.log('[MQTT] Connection closed');
     window.uiHelper.updateConnectionStatus(false, 'broker', false);
-    window.uiHelper.updateConnectionStatus(false, 'client', false);
     if (onLog) onLog('Disconnected from MQTT broker');
   });
   
   client.on('error', err => {
     console.error('[MQTT] Error:', err);
     window.uiHelper.updateConnectionStatus(false, 'broker', false);
-    window.uiHelper.updateConnectionStatus(false, 'client', false);
     if (onLog) onLog('MQTT Error: ' + err.message);
   });
   
   client.on('offline', () => {
     console.log('[MQTT] Client offline');
     window.uiHelper.updateConnectionStatus(false, 'broker', false);
-    window.uiHelper.updateConnectionStatus(false, 'client', false);
     if (onLog) onLog('MQTT client is offline');
   });
   

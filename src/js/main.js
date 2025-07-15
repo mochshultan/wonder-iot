@@ -111,6 +111,20 @@ if (localStorage.getItem('darkMode') === '1') {
   setDarkMode(false);
 }
 
+// --- MQTT Client Connection Status Timer ---
+let clientMessageTimeout = null;
+function setClientStatus(connected) {
+  window.uiHelper.updateConnectionStatus(connected, 'client');
+}
+// Set initial client status to disconnected
+setClientStatus(false);
+function handleClientMessage() {
+  setClientStatus(true);
+  if (clientMessageTimeout) clearTimeout(clientMessageTimeout);
+  clientMessageTimeout = setTimeout(() => setClientStatus(false), 5000);
+}
+// --- END ---
+
 // Inisialisasi MQTT dan data handler
 if (window.mqttHelper && window.uiHelper && window.charts) {
   console.log('[MAIN] Initializing MQTT with topics:', {
@@ -132,20 +146,38 @@ if (window.mqttHelper && window.uiHelper && window.charts) {
     }
   }
   function processImuData(data) {
-    window.uiHelper.updateConnectionStatus(data.mqttConnected, 'client');
-    window.uiHelper.updateConnectionStatus(data.wifiConnected, 'wifi');
-    document.getElementById('richter-scale').textContent = data.richterScale.toFixed(2);
-    document.getElementById('peak-to-peak').textContent = data.maxPeakToPeak.toFixed(2);
-    const intensityPercentage = Math.min(data.richterScale * 10, 100);
+    handleClientMessage();
+    // Use default value 0 or false if field is missing
+    const richterScale = typeof data.richterScale === 'number' ? data.richterScale : 0;
+    const maxPeakToPeak = typeof data.maxPeakToPeak === 'number' ? data.maxPeakToPeak : 0;
+    const accelMagnitude = typeof data.accelMagnitude === 'number' ? data.accelMagnitude : 0;
+    const earthquakeEventActive = typeof data.earthquakeEventActive === 'boolean' ? data.earthquakeEventActive : false;
+    const earthquakeLevel = typeof data.earthquakeLevel === 'number' ? data.earthquakeLevel : 0;
+    const temp = typeof data.temp === 'number' ? data.temp : 0;
+    const accelX = typeof data.accelX === 'number' ? data.accelX : 0;
+    const accelY = typeof data.accelY === 'number' ? data.accelY : 0;
+    const accelZ = typeof data.accelZ === 'number' ? data.accelZ : 0;
+    const gyroX = typeof data.gyroX === 'number' ? data.gyroX : 0;
+    const gyroY = typeof data.gyroY === 'number' ? data.gyroY : 0;
+    const gyroZ = typeof data.gyroZ === 'number' ? data.gyroZ : 0;
+    const wifiConnected = typeof data.wifiConnected === 'boolean' ? data.wifiConnected : false;
+    const mqttConnected = typeof data.mqttConnected === 'boolean' ? data.mqttConnected : false;
+    const wifiRSSI = typeof data.wifiRSSI === 'number' ? data.wifiRSSI : 0;
+
+    window.uiHelper.updateConnectionStatus(mqttConnected, 'client');
+    window.uiHelper.updateConnectionStatus(wifiConnected, 'wifi');
+    document.getElementById('richter-scale').textContent = richterScale.toFixed(2);
+    document.getElementById('peak-to-peak').textContent = maxPeakToPeak.toFixed(2);
+    const intensityPercentage = Math.min(richterScale * 10, 100);
     document.getElementById('intensity-bar').style.width = `${intensityPercentage}%`;
     const statusElement = document.getElementById('earthquake-status');
     const eventIndicator = document.getElementById('event-status-indicator');
-    if (data.earthquakeEventActive) {
+    if (earthquakeEventActive) {
       statusElement.textContent = 'Earthquake!';
       statusElement.className = 'text-xl font-semibold text-red-500';
       eventIndicator.className = 'w-3 h-3 rounded-full mr-2 bg-red-500 animate-pulse';
       document.getElementById('event-status').textContent = 'Active';
-      document.getElementById('event-level').textContent = `Level: ${data.earthquakeLevel}`;
+      document.getElementById('event-level').textContent = `Level: ${earthquakeLevel}`;
       startBeeping();
     } else {
       statusElement.textContent = 'Normal';
@@ -155,26 +187,27 @@ if (window.mqttHelper && window.uiHelper && window.charts) {
       document.getElementById('event-level').textContent = 'Level: --';
       stopBeeping();
     }
-    document.getElementById('temperature').textContent = data.temp.toFixed(2);
-    document.getElementById('accel-magnitude').textContent = data.accelMagnitude.toFixed(2);
-    document.getElementById('wifi-rssi').textContent = `RSSI: ${data.wifiRSSI} dBm`;
-    document.getElementById('accel-x').textContent = data.accelX.toFixed(2);
-    document.getElementById('accel-y').textContent = data.accelY.toFixed(2);
-    document.getElementById('accel-z').textContent = data.accelZ.toFixed(2);
-    document.getElementById('gyro-x').textContent = data.gyroX.toFixed(2);
-    document.getElementById('gyro-y').textContent = data.gyroY.toFixed(2);
-    document.getElementById('gyro-z').textContent = data.gyroZ.toFixed(2);
-    document.getElementById('front-value').textContent = `${data.accelX.toFixed(1)}, ${data.accelY.toFixed(1)}`;
-    document.getElementById('right-value').textContent = `${data.accelY.toFixed(1)}, ${data.accelZ.toFixed(1)}`;
-    document.getElementById('bottom-value').textContent = `${data.accelX.toFixed(1)}, ${data.accelZ.toFixed(1)}`;
+    document.getElementById('temperature').textContent = temp.toFixed(2);
+    document.getElementById('accel-magnitude').textContent = accelMagnitude.toFixed(2);
+    document.getElementById('wifi-rssi').textContent = `RSSI: ${wifiRSSI} dBm`;
+    document.getElementById('accel-x').textContent = accelX.toFixed(2);
+    document.getElementById('accel-y').textContent = accelY.toFixed(2);
+    document.getElementById('accel-z').textContent = accelZ.toFixed(2);
+    document.getElementById('gyro-x').textContent = gyroX.toFixed(2);
+    document.getElementById('gyro-y').textContent = gyroY.toFixed(2);
+    document.getElementById('gyro-z').textContent = gyroZ.toFixed(2);
+    document.getElementById('front-value').textContent = `${accelX.toFixed(1)}, ${accelY.toFixed(1)}`;
+    document.getElementById('right-value').textContent = `${accelY.toFixed(1)}, ${accelZ.toFixed(1)}`;
+    document.getElementById('bottom-value').textContent = `${accelX.toFixed(1)}, ${accelZ.toFixed(1)}`;
     const cube = document.querySelector('.cube');
-    const tiltX = Math.min(Math.max(data.accelX * 10, -45), 45);
-    const tiltY = Math.min(Math.max(data.accelY * 10, -45), 45);
+    const tiltX = Math.min(Math.max(accelX * 10, -45), 45);
+    const tiltY = Math.min(Math.max(accelY * 10, -45), 45);
     cube.style.transform = `rotateX(${-tiltX}deg) rotateY(${tiltY}deg)`;
-    window.uiHelper.updateChart(window.charts.accelChart, [data.accelX, data.accelY, data.accelZ]);
-    window.uiHelper.updateChart(window.charts.gyroChart, [data.gyroX, data.gyroY, data.gyroZ]);
+    window.uiHelper.updateChart(window.charts.accelChart, [accelX, accelY, accelZ]);
+    window.uiHelper.updateChart(window.charts.gyroChart, [gyroX, gyroY, gyroZ]);
   }
   function processVibrationData(data) {
+    handleClientMessage();
     document.getElementById('sw420-state').textContent = data.sw420;
     document.getElementById('vibration-detected').textContent = data.vibrationDetected ? 'Yes' : 'No';
     document.getElementById('vibration-count').textContent = data.vibrationCount;
