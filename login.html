@@ -16,21 +16,17 @@
     <div class="bg-blob bg-blob-4"></div>
     
     <div class="flex items-center justify-center min-h-screen relative z-10 px-4">
-        <div class="w-full max-w-md p-6 sm:p-8 bg-mica mica-neumorphic-card shadow-lg rounded-2xl">
+        <div class="w-full max-w-md p-6 sm:p-8 bg-mica mica-neumorphic-card shadow-lg rounded-2xl relative">
             <div class="absolute inset-0 pointer-events-none opacity-20" style="background: url('src/images/noise.png');"></div>
-            
-            <!-- Header with controls -->
-            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                <div class="flex flex-col items-center text-center">
-                    <i class="fas fa-earth-americas text-3xl sm:text-4xl text-blue-500 mb-2"></i>
-                    <h1 class="text-xl sm:text-2xl font-bold text-gray-800 mb-1">WONDER</h1>
-                    <p class="text-sm sm:text-base text-gray-600 text-center">Wireless Observation for Natural Detection Earthquake Response</p>
-                </div>
-                <div class="flex items-center space-x-3 sm:space-x-4">
-                    <button id="dark-mode-toggle" class="p-2 sm:p-3 rounded-full mica-neumorphic-card focus:outline-none transition-all duration-200 hover:scale-105 active:scale-95" title="Toggle dark mode">
-                        <i id="dark-mode-icon" class="fas fa-moon text-lg sm:text-xl text-gray-600 w-5 sm:w-6 text-center"></i>
-                    </button>
-                </div>
+            <!-- Dark mode button absolute top right -->
+            <button id="dark-mode-toggle" class="absolute top-4 right-4 p-2 sm:p-3 rounded-full mica-neumorphic-card focus:outline-none transition-all duration-200 hover:scale-105 active:scale-95 z-10" title="Toggle dark mode">
+                <i id="dark-mode-icon" class="fas fa-moon text-lg sm:text-xl text-gray-600 w-5 sm:w-6 text-center"></i>
+            </button>
+            <!-- Centered header -->
+            <div class="flex flex-col items-center text-center mb-6">
+                <i class="fas fa-earth-americas text-3xl sm:text-4xl text-blue-500 mb-2"></i>
+                <h1 class="text-xl sm:text-2xl font-bold text-gray-800 mb-1">WONDER</h1>
+                <p class="text-sm sm:text-base text-gray-600 text-center">Wireless Observation for Natural Detection Earthquake Response</p>
             </div>
             
             <form id="login-form" class="space-y-6 animate-fade-in">

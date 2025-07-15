@@ -174,6 +174,137 @@ Akses di: http://localhost:8000/login.html
 
 ---
 
+## 📋 Monitoring Options
+
+<details>
+<summary><strong>🔍 Full System Monitoring (ESP32 + All Sensors)</strong></summary>
+
+### **Complete Setup with Vibration Sensors & Buzzer**
+- **File**: `esp32/esp32.ino`
+- **Sensors**: MPU6050 + SW420 + SW1801P + Dual Buzzer
+- **Features**: Full earthquake detection, vibration analysis, alert system
+- **Data Topics**: IMU data + Vibration data
+
+#### **Hardware Requirements:**
+- ESP32 Development Board
+- MPU6050 IMU Sensor
+- SW420 Digital Vibration Sensor
+- SW1801P Analog Vibration Sensor  
+- 2x Buzzer (GPIO 12 & 14)
+
+#### **JSON Data Format:**
+```json
+// IMU Topic: YOUR_MQTT_TOPIC/data
+{
+  "accelX": 0.12,
+  "accelY": -0.05,
+  "accelZ": 9.85,
+  "gyroX": 0.01,
+  "gyroY": 0.02,
+  "gyroZ": -0.01,
+  "temp": 25.6,
+  "accelMagnitude": 9.85,
+  "maxPeakToPeak": 0.0,
+  "richterScale": 0.0,
+  "earthquakeEventActive": false,
+  "earthquakeLevel": 0,
+  "wifiConnected": true,
+  "mqttConnected": true,
+  "wifiRSSI": -45
+}
+
+// Vibration Topic: YOUR_MQTT_TOPIC/vibration
+{
+  "sw420": 1,
+  "vibrationDetected": false,
+  "vibrationCount": 0,
+  "sw1801p_voltage": 3.2,
+  "earthquakeDetected": false
+}
+```
+
+</details>
+
+<details>
+<summary><strong>📊 IMU-Only Monitoring (Simplified Setup)</strong></summary>
+
+### **Minimal Setup for IMU Data Only**
+- **File**: `esp32/only-imu/only-imu.ino`
+- **Sensors**: MPU6050 only
+- **Features**: Basic IMU monitoring, no vibration detection
+- **Data Topics**: IMU data only
+
+#### **Hardware Requirements:**
+- ESP32 Development Board
+- MPU6050 IMU Sensor
+- **No vibration sensors or buzzer required**
+
+#### **Simplified JSON Data Format:**
+```json
+// IMU Topic: YOUR_MQTT_TOPIC/data
+{
+  "accelX": 0.12,
+  "accelY": -0.05,
+  "accelZ": 9.85,
+  "gyroX": 0.01,
+  "gyroY": 0.02,
+  "gyroZ": -0.01,
+  "temp": 25.6,
+  "accelMagnitude": 9.85,
+  "maxPeakToPeak": 0.0,
+  "richterScale": 0.0,
+  "wifiConnected": true,
+  "mqttConnected": true,
+  "wifiRSSI": -45
+}
+```
+
+#### **Key Differences from Full System:**
+- ❌ No `earthquakeEventActive` field
+- ❌ No `earthquakeLevel` field  
+- ❌ No vibration topic
+- ❌ No buzzer alerts
+- ✅ Simplified peak-to-peak calculation
+- ✅ Basic Richter scale estimation
+- ✅ WiFi and MQTT status monitoring
+
+#### **Setup Instructions:**
+1. Upload `esp32/only-imu/only-imu.ino` to ESP32
+2. Configure WiFi using WiFiManager (AP: "WONDER_Wifi")
+3. Update `topic_imu` variable with your MQTT topic
+4. Connect MPU6050 to ESP32 I2C pins (SDA: GPIO21, SCL: GPIO22)
+5. Power ESP32 and monitor Serial output
+6. Use web dashboard with IMU topic only
+
+#### **Web Dashboard Usage:**
+- Login with IMU topic only (leave vibration topic empty)
+- Dashboard will show IMU data and 3D visualization
+- Vibration tabs will show "No data" (expected behavior)
+- All IMU features work normally
+
+</details>
+
+---
+
+## 📊 Configuration Comparison
+
+### 🔄 **Full System vs IMU-Only**
+
+| Feature | Full System | IMU-Only |
+|---------|-------------|----------|
+| **Hardware Complexity** | ⭐⭐⭐⭐⭐ | ⭐⭐ |
+| **Setup Time** | ⭐⭐⭐⭐ | ⭐⭐ |
+| **Cost** | ⭐⭐⭐⭐ | ⭐⭐ |
+| **Features** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
+| **Alert System** | ✅ Full buzzer alerts | ❌ No alerts |
+| **Vibration Detection** | ✅ SW420 + SW1801P | ❌ No vibration sensors |
+| **Earthquake Analysis** | ✅ Advanced peak detection | ✅ Basic peak detection |
+| **3D Visualization** | ✅ Full IMU data | ✅ Full IMU data |
+| **Web Dashboard** | ✅ All features | ✅ IMU features only |
+| **Mobile App** | ✅ Full compatibility | ✅ IMU compatibility |
+
+---
+
 ## 🎮 How to Use
 
 ### 📝 **Monitoring Steps**
@@ -231,28 +362,35 @@ Akses di: http://localhost:8000/login.html
 | **MQTT Buffer** | 1024 bytes | Message buffer size |
 
 ### 📡 **Sensor Specifications**
-| Sensor | Type | Range | Resolution | Sample Rate |
-|--------|------|-------|------------|-------------|
-| **MPU6050 Accel** | 3-axis | ±2g | 16-bit | 184 Hz |
-| **MPU6050 Gyro** | 3-axis | ±250°/s | 16-bit | 184 Hz |
-| **SW420** | Digital | HIGH/LOW | 1-bit | Real-time |
-| **SW1801P** | Analog | 0-3.3V | 12-bit | Real-time |
+
+#### **Full System Configuration**
+| Sensor | Type | Range | Resolution | Sample Rate | GPIO |
+|--------|------|-------|------------|-------------|------|
+| **MPU6050 Accel** | 3-axis | ±2g | 16-bit | 184 Hz | I2C |
+| **MPU6050 Gyro** | 3-axis | ±250°/s | 16-bit | 184 Hz | I2C |
+| **SW420** | Digital | HIGH/LOW | 1-bit | Real-time | GPIO 19 |
+| **SW1801P** | Analog | 0-3.3V | 12-bit | Real-time | GPIO 34 |
+| **Buzzer 1** | Digital | 2.0-2.5kHz | - | Variable | GPIO 12 |
+| **Buzzer 2** | Digital | 2.0-2.5kHz | - | Variable | GPIO 14 |
+
 
 ### 🌐 **Network Configuration**
-| Parameter | Value | Description |
-|-----------|-------|-------------|
-| **MQTT Broker** | broker.emqx.io | Public EMQX broker |
-| **Port** | 1883 | Standard MQTT port |
-| **Client ID** | esp32-client | Unique identifier |
-| **Topics** | Custom (user-defined) | MQTT topic(s) for IMU and vibration data |
-| **QoS** | 0 | At most once delivery |
+| Parameter | Full System | IMU-Only | Description |
+|-----------|-------------|----------|-------------|
+| **MQTT Broker** | broker.emqx.io | broker.emqx.io | Public EMQX broker |
+| **Port** | 1883 | 1883 | Standard MQTT port |
+| **Client ID** | esp32-client | esp32-imu-client | Unique identifier |
+| **IMU Topic** | Custom | Custom | MQTT topic for IMU data |
+| **Vibration Topic** | Custom | - | MQTT topic for vibration data |
+| **QoS** | 0 | 0 | At most once delivery |
+| **Buffer Size** | 1024 bytes | 1024 bytes | Message buffer |
 
 ### 📱 **App Specifications**
-| Platform | Version | Size | Package |
-|----------|---------|------|---------|
-| **Android APK** | 2.1 | 939KB | com.bangtanniot.wonder |
-| **Android AAB** | 2.1 | 1.0MB | com.bangtanniot.wonder |
-| **Web Dashboard** | 1.0 | 32KB | HTML5 application |
+| Platform | Version | Size | Package | Compatibility |
+|----------|---------|------|---------|---------------|
+| **Android APK** | 2.1 | 939KB | com.bangtanniot.wonder | Full System + IMU-Only |
+| **Android AAB** | 2.1 | 1.0MB | com.bangtanniot.wonder | Full System + IMU-Only |
+| **Web Dashboard** | 1.0 | 32KB | HTML5 application | Full System + IMU-Only |
 
 ---
 
@@ -266,7 +404,7 @@ Akses di: http://localhost:8000/login.html
 
 ### 📊 **Data Structure**
 
-#### 🔍 **IMU Data Topic** (`YOUR_MQTT_TOPICS/data`)
+#### 🔍 **Full System/IMU-Only - IMU Data Topic** (`YOUR_MQTT_TOPICS/data`)
 ```json
 {
   "accelX": 0.12,
@@ -287,7 +425,7 @@ Akses di: http://localhost:8000/login.html
 }
 ```
 
-#### 🔔 **Vibration Data Topic** (`YOUR_MQTT_TOPICS/vibration`)
+#### 🔔 **Vibration Data Topic** (`YOUR_MQTT_TOPICS/vibration`) - Full System Only
 ```json
 {
   "sw420": 1,
@@ -303,14 +441,21 @@ Akses di: http://localhost:8000/login.html
 ## 🔍 API Documentation
 
 ### 📡 **MQTT Topics**
+
+#### **Full System Configuration**
 | Topic | Type | Description | Payload |
 |-------|------|-------------|---------|
-| `YOUR_MQTT_TOPICS/data` | Publish | IMU sensor data | JSON object |
+| `YOUR_MQTT_TOPICS/data` | Publish | IMU sensor data with earthquake detection | JSON object |
 | `YOUR_MQTT_TOPICS/vibration` | Publish | Vibration sensor data | JSON object |
+
+#### **IMU-Only Configuration**
+| Topic | Type | Description | Payload |
+|-------|------|-------------|---------|
+| `YOUR_MQTT_TOPICS/data` | Publish | IMU sensor data (simplified) | JSON object |
 
 ### 🔧 **Configuration Parameters**
 
-#### 📊 **Detection Parameters**
+#### 📊 **Detection Parameters (Full System)**
 ```cpp
 // Peak Detection
 const int PEAK_BUFFER_SIZE = 100;           // Circular buffer size
@@ -322,19 +467,27 @@ const unsigned long VIBRATION_TIMEOUT_MS = 1500; // Vibration timeout (ms)
 const int SW1801P_THRESHOLD = 3300;        // mV threshold for SW1801P
 ```
 
-#### 🌐 **Network Parameters**
+#### 📊 **Detection Parameters (IMU-Only)**
+```cpp
+// Simplified Peak Detection
+float maxPeakToPeak = 0;                    // Basic peak tracking
+float richterScale = 0;                     // Simplified Richter calculation
+```
+
+#### 🌐 **Network Parameters (Both Configurations)**
 ```cpp
 // WiFi Configuration
-const char* ssid = "FTMM@AIRLANGGA-HOTSPOT";
-const char* password = "@irlangg@";
+const char* ssid = "YOUR_WIFI_SSID";
+const char* password = "YOUR_WIFI_PASSWORD";
 
 // MQTT Configuration
 const char* mqtt_server = "broker.emqx.io";
 const int mqtt_port = 1883;
-const char* mqtt_client_id = "esp32-client";
+const char* mqtt_client_id = "esp32-client";        // Full system
+const char* mqtt_client_id = "esp32-imu-client";    // IMU-only
 ```
 
-#### 🔔 **Alert Parameters**
+#### 🔔 **Alert Parameters (Full System Only)**
 ```cpp
 // Buzzer Frequencies
 const int BUZZER_LIGHT_FREQ = 2000;    // 2.0kHz for light earthquake
@@ -393,17 +546,36 @@ void detectPeaks(float accelMagnitude) {
 
 ```
 WONDER-2.1/
+├── esp32/                      # ESP32 firmware files
+│   ├── esp32.ino              # Full system firmware (all sensors)
+│   └── only-imu/              # IMU-only firmware
+│       └── only-imu.ino       # Simplified firmware (MPU6050 only)
 ├── android/                    # Android application files
+│   ├── apps/                  # Generated APK/AAB files
+│   ├── certification.txt      # App certification details
+│   ├── license.txt           # App license information
+│   ├── readme.txt            # Android app documentation
+│   └── WebIntoApp URLs       # App builder references
 ├── src/
-│   ├── css/style.css           # Modular CSS (Tailwind + custom)
-│   ├── js/                     # Modular JS (main.js, mqtt.js, ui.js, chart.js, login.js)
-│   └── images/                 # Project diagrams, noise, and images
-│       └─ schematic/           # Hardware schematics and wiring
-├── index.html                  # Web dashboard utama (redirect dari login)
-├── login.html                  # Halaman login MQTT (wajib akses pertama)
-├── LICENSE
-├── README.md
-└── ...
+│   ├── css/
+│   │   └── style.css         # Modular CSS (Tailwind + custom)
+│   ├── js/                   # Modular JavaScript files
+│   │   ├── main.js           # Main dashboard logic
+│   │   ├── mqtt.js           # MQTT communication handler
+│   │   ├── ui.js             # UI interactions and animations
+│   │   ├── chart.js          # Chart.js integration
+│   │   └── login.js          # Login form handler
+│   └── images/               # Project assets and diagrams
+│       ├── noise.png         # Background texture
+│       ├── proto.jpg         # Physical prototype image
+│       ├── system-architecture.svg
+│       ├── data-flow.svg
+│       └── schematic/        # Hardware schematics
+│           └── Schematic_iot_esp32_gempa.png
+├── index.html                # Main web dashboard (redirect from login)
+├── login.html                # MQTT topic configuration page
+├── LICENSE                   # MIT License
+└── README.md                 # Project documentation
 ```
 
 ---
@@ -417,12 +589,29 @@ WONDER-2.1/
 - Consult professional seismic monitoring services for official data
 - Regular sensor calibration and maintenance required
 
+### 📋 **Configuration-Specific Notes**
+
+#### **Full System Configuration**
+- Requires all sensors (MPU6050, SW420, SW1801P) for optimal performance
+- Buzzer system provides immediate audio alerts during events
+- Vibration sensors enhance detection accuracy and reduce false positives
+- Higher power consumption due to multiple sensors and buzzer system
+- More complex wiring and setup process
+
+#### **IMU-Only Configuration**
+- Simplified setup with only MPU6050 sensor required
+- Lower power consumption and cost
+- Basic earthquake detection using accelerometer data only
+- No audio alerts or vibration sensor validation
+- Suitable for learning and prototyping purposes
+
 ### 📋 **Technical Information**
 - Firmware runs on ESP32 with real-time processing
 - Web dashboard requires modern browser with JavaScript enabled
 - MQTT broker is public service, consider private broker for production
 - Android app generated using WebIntoApp.com platform
 - All data is transmitted in JSON format
+- Both configurations support WiFiManager for easy WiFi setup
 
 ### 🔧 **Future Development**
 - Integration with official seismic monitoring networks
@@ -430,6 +619,136 @@ WONDER-2.1/
 - Cloud storage for historical data analysis
 - Mobile app with native Android features
 - Multi-device network for wider coverage
+
+---
+
+## 🔧 Troubleshooting
+
+### 🚨 **Common Issues & Solutions**
+
+#### **Full System Configuration**
+| Issue | Symptom | Solution |
+|-------|---------|----------|
+| **MPU6050 not detected** | "Failed to find MPU6050 chip" | Check I2C connections (SDA: GPIO21, SCL: GPIO22) |
+| **SW420 always HIGH** | No vibration detection | Check GPIO 19 connection and sensor orientation |
+| **SW1801P voltage stuck** | Always 0V or 3.3V | Check GPIO 34 connection and sensor calibration |
+| **Buzzer not working** | No sound during alerts | Check GPIO 12 & 14 connections and power supply |
+| **WiFi connection drops** | Frequent disconnections | Check WiFi signal strength and router settings |
+| **MQTT publish fails** | "MQTT not connected" | Verify broker URL, port, and network connectivity |
+
+#### **IMU-Only Configuration**
+| Issue | Symptom | Solution |
+|-------|---------|----------|
+| **MPU6050 not detected** | "Failed to find MPU6050 chip" | Check I2C connections (SDA: GPIO21, SCL: GPIO22) |
+| **WiFi connection drops** | Frequent disconnections | Check WiFi signal strength and router settings |
+| **MQTT publish fails** | "MQTT not connected" | Verify broker URL, port, and network connectivity |
+| **Web dashboard shows no data** | Empty charts and displays | Check MQTT topic configuration in login page |
+
+#### **Web Dashboard Issues**
+| Issue | Symptom | Solution |
+|-------|---------|----------|
+| **404 errors for images** | Missing noise.png or other assets | Ensure server is running from project root directory |
+| **MQTT helpers not available** | Console shows "Required helpers not available" | Check script loading order in index.html |
+| **Chart.js errors** | "Chart is not defined" | Verify Chart.js CDN is loaded before chart.js |
+| **Dark mode not working** | Theme doesn't persist | Check localStorage permissions in browser |
+
+### 🔍 **Debug Information**
+
+#### **Serial Monitor Output**
+```
+// Successful startup (Full System)
+I2C device found at address 0x68
+MPU6050 Found!
+SW420 sensor initialized on GPIO 19
+Dual buzzer system initialized on G12 and G14
+WiFi connected! IP: 192.168.1.100
+MQTT connected successfully!
+
+// Successful startup (IMU-Only)
+I2C device found at address 0x68
+MPU6050 Found!
+WiFi connected! IP: 192.168.1.100
+MQTT connected successfully!
+```
+
+#### **MQTT Data Verification**
+```bash
+# Test MQTT connection (replace with your topic)
+mosquitto_sub -h broker.emqx.io -p 1883 -t "YOUR_TOPIC/data"
+mosquitto_sub -h broker.emqx.io -p 1883 -t "YOUR_TOPIC/vibration"
+```
+
+---
+
+## 📋 Quick Reference
+
+### 🚀 **Quick Setup Commands**
+
+#### **Full System**
+```bash
+# 1. Upload firmware
+# Open esp32/esp32.ino in Arduino IDE
+# Upload to ESP32
+
+# 2. Start web server
+python -m http.server 8000
+
+# 3. Access dashboard
+# Open http://localhost:8000/login.html
+# Enter MQTT topics: YOUR_TOPIC/data and YOUR_TOPIC/vibration
+```
+
+#### **IMU-Only**
+```bash
+# 1. Upload firmware
+# Open esp32/only-imu/only-imu.ino in Arduino IDE
+# Upload to ESP32
+
+# 2. Start web server
+python -m http.server 8000
+
+# 3. Access dashboard
+# Open http://localhost:8000/login.html
+# Enter MQTT topic: YOUR_TOPIC/data (leave vibration empty)
+```
+
+### 🔧 **Hardware Pinout**
+
+#### **Full System**
+| Component | ESP32 Pin | Connection |
+|-----------|-----------|------------|
+| MPU6050 SDA | GPIO 21 | I2C Data |
+| MPU6050 SCL | GPIO 22 | I2C Clock |
+| SW420 | GPIO 19 | Digital Input |
+| SW1801P | GPIO 34 | Analog Input |
+| Buzzer 1 | GPIO 12 | Digital Output |
+| Buzzer 2 | GPIO 14 | Digital Output |
+
+#### **IMU-Only**
+| Component | ESP32 Pin | Connection |
+|-----------|-----------|------------|
+| MPU6050 SDA | GPIO 21 | I2C Data |
+| MPU6050 SCL | GPIO 22 | I2C Clock |
+
+### 📊 **MQTT Topics**
+
+#### **Full System**
+- **IMU Data**: `YOUR_TOPIC/data`
+- **Vibration Data**: `YOUR_TOPIC/vibration`
+
+#### **IMU-Only**
+- **IMU Data**: `YOUR_TOPIC/data`
+
+### 🎯 **Key Features Comparison**
+
+| Feature | Full System | IMU-Only |
+|---------|-------------|----------|
+| **Sensors** | MPU6050 + SW420 + SW1801P | MPU6050 only |
+| **Alerts** | Dual buzzer system | None |
+| **Detection** | Multi-sensor validation | Basic accelerometer |
+| **Accuracy** | High (validated) | Medium (basic) |
+| **Setup Time** | 30-45 minutes | 10-15 minutes |
+| **Cost** | ~$25-35 | ~$15-20 |
 
 ---
 
