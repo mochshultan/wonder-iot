@@ -104,16 +104,46 @@
 ---
 
 ## 🌟 UI/UX & Dashboard Features (v2.1)
-- Modern glassmorphism (mica) + neumorphic design
-- Animated, responsive background (gradient, shimmer, noise)
-- Dark mode toggle (dengan localStorage)
-- Modular tab navigation (Dashboard, Vibration, 3D IMU, Graphs)
-- 3D IMU cube visualization (responsive, proporsional)
-- Seven-segment font untuk data utama
-- Real-time MQTT status (broker/client) dengan indikator
-- Data log, grafik, dan panel data dengan efek glassmorphism-inset
-- Semua resource (noise, font, dsb) sudah lokal, tidak ada 404
-- Kode CSS & JS sudah modular (src/css, src/js)
+
+### 🎨 **Visual Design & Animations**
+
+#### 🌈 **Animated Background System**
+- **Dynamic Gradient Animation**: Multi-layered CSS gradients with smooth color transitions
+- **Shimmer Effect**: Subtle light reflection animation across the interface
+- **Noise Texture Overlay**: Custom noise.png texture for organic, tactile feel
+- **Responsive Animation**: Background adapts to screen size and device orientation
+- **Performance Optimized**: Hardware-accelerated CSS animations for smooth 60fps
+
+#### 🪟 **Glassmorphism & Neumorphic Design**
+- **Glassmorphism (Mica)**: Translucent glass-like panels with backdrop blur effects
+- **Neumorphic Elements**: Soft, extruded UI components with realistic shadows
+- **Inset Effects**: Pressed-in appearance for data panels and control elements
+- **Layered Depth**: Multiple z-index layers creating 3D visual hierarchy
+
+#### 🌙 **Dark Mode System**
+- **LocalStorage Persistence**: User preference saved across browser sessions
+- **Smooth Transitions**: Animated color changes between light/dark themes
+- **Dynamic Color Adaptation**: All UI elements automatically adapt to theme changes
+- **Accessibility Compliant**: High contrast ratios for better readability
+
+### 📱 **Interactive Features**
+
+#### 🎛️ **Navigation & Layout**
+- **Modular Tab System**: Dashboard, Vibration, 3D IMU, Graphs with smooth transitions
+- **Responsive Grid Layout**: Adaptive design for desktop, tablet, and mobile devices
+- **Touch-Friendly Interface**: Optimized for both mouse and touch interactions
+
+#### 🎯 **Data Visualization**
+- **3D IMU Cube**: Interactive 3D visualization with real-time rotation and scaling
+- **Seven-Segment Font**: Retro-style digital display for primary data values
+- **Real-time Charts**: Dynamic graph updates with smooth animations
+- **Status Indicators**: Color-coded connection and sensor status displays
+
+#### 🔄 **Real-time Updates**
+- **MQTT Status Monitoring**: Live connection status with visual indicators
+- **Data Streaming**: Smooth real-time data updates without page refresh
+- **Event Logging**: Chronological data log with timestamp and event classification
+- **Performance Metrics**: System health monitoring with visual feedback
 
 ---
 
@@ -368,7 +398,7 @@ WONDER-2.1/
 │   ├── css/style.css           # Modular CSS (Tailwind + custom)
 │   ├── js/                     # Modular JS (main.js, mqtt.js, ui.js, chart.js, login.js)
 │   └── images/                 # Project diagrams, noise, and images
-│       └──schematic/           # Hardware schematics and wiring
+│       └─ schematic/           # Hardware schematics and wiring
 ├── index.html                  # Web dashboard utama (redirect dari login)
 ├── login.html                  # Halaman login MQTT (wajib akses pertama)
 ├── LICENSE
