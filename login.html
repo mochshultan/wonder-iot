@@ -9,28 +9,45 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-gray-50 min-h-screen">
-    <div class="flex items-center justify-center min-h-screen">
-        <div class="w-full max-w-md p-8 bg-mica neumorphic shadow-lg rounded-2xl">
-            <div class="flex flex-col items-center mb-6">
-                <i class="fas fa-earth-americas text-4xl text-blue-500 mb-2"></i>
-                <h1 class="text-2xl font-bold text-gray-800 mb-1">WONDER</h1>
-                <p class="text-gray-600 text-center">Wireless Observation for Natural Detection Earthquake Response</p>
+    <!-- Animated Background Blobs -->
+    <div class="bg-blob bg-blob-1"></div>
+    <div class="bg-blob bg-blob-2"></div>
+    <div class="bg-blob bg-blob-3"></div>
+    <div class="bg-blob bg-blob-4"></div>
+    
+    <div class="flex items-center justify-center min-h-screen relative z-10 px-4">
+        <div class="w-full max-w-md p-6 sm:p-8 bg-mica mica-neumorphic-card shadow-lg rounded-2xl">
+            <div class="absolute inset-0 pointer-events-none opacity-20" style="background: url('src/images/noise.png');"></div>
+            
+            <!-- Header with controls -->
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                <div class="flex flex-col items-center text-center">
+                    <i class="fas fa-earth-americas text-3xl sm:text-4xl text-blue-500 mb-2"></i>
+                    <h1 class="text-xl sm:text-2xl font-bold text-gray-800 mb-1">WONDER</h1>
+                    <p class="text-sm sm:text-base text-gray-600 text-center">Wireless Observation for Natural Detection Earthquake Response</p>
+                </div>
+                <div class="flex items-center space-x-3 sm:space-x-4">
+                    <button id="dark-mode-toggle" class="p-2 sm:p-3 rounded-full mica-neumorphic-card focus:outline-none transition-all duration-200 hover:scale-105 active:scale-95" title="Toggle dark mode">
+                        <i id="dark-mode-icon" class="fas fa-moon text-lg sm:text-xl text-gray-600 w-5 sm:w-6 text-center"></i>
+                    </button>
+                </div>
             </div>
-            <form id="login-form" class="space-y-6">
-                <div>
+            
+            <form id="login-form" class="space-y-6 animate-fade-in">
+                <div class="animate-fade-in" style="animation-delay: 0.1s;">
                     <label for="imu-topic" class="block text-gray-700 font-medium mb-1">IMU Topic (wajib salah satu)</label>
-                    <input type="text" id="imu-topic" name="imu-topic" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none bg-white bg-opacity-70" placeholder="Contoh: MOCH/SHULTAN/163231040/data">
+                    <input type="text" id="imu-topic" name="imu-topic" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none bg-white bg-opacity-70 backdrop-blur-sm transition-all duration-300 hover:bg-opacity-80 hover:shadow-lg hover:scale-[1.02] focus:scale-[1.02]" placeholder="Contoh: 911/esp/data/imu">
                 </div>
-                <div>
+                <div class="animate-fade-in" style="animation-delay: 0.2s;">
                     <label for="vibration-topic" class="block text-gray-700 font-medium mb-1">Vibration Topic (opsional)</label>
-                    <input type="text" id="vibration-topic" name="vibration-topic" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none bg-white bg-opacity-70" placeholder="Contoh: MOCH/SHULTAN/163231040/vibration">
+                    <input type="text" id="vibration-topic" name="vibration-topic" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none bg-white bg-opacity-70 backdrop-blur-sm transition-all duration-300 hover:bg-opacity-80 hover:shadow-lg hover:scale-[1.02] focus:scale-[1.02]" placeholder="Contoh: 911/esp/data/vibration">
                 </div>
-                <div id="login-error" class="text-red-500 text-sm hidden">Minimal satu topic harus diisi.</div>
-                <button type="submit" class="w-full py-3 mt-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold shadow-md hover:from-purple-500 hover:to-blue-500 transition">Login</button>
+                <div id="login-error" class="text-red-500 text-sm hidden p-3 bg-red-50 rounded-lg border border-red-200 animate-fade-in" style="animation-delay: 0.3s;">Minimal satu topic harus diisi.</div>
+                <button type="submit" class="w-full py-3 mt-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold shadow-md hover:from-purple-500 hover:to-blue-500 transition-all duration-300 transform hover:scale-105 active:scale-95 animate-fade-in relative overflow-hidden" style="animation-delay: 0.4s;">Login</button>
             </form>
         </div>
     </div>
-    <script src="src/js/mqtt.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/4.3.7/mqtt.min.js"></script>
     <script src="src/js/login.js"></script>
 </body>
 </html> 

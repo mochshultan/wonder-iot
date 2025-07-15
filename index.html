@@ -19,7 +19,7 @@
     <div class="container mx-auto px-4 sm:px-6 lg:px-12 py-8 bg-mica mt-10 mb-10">
         <!-- Header -->
         <header class="mica-neumorphic-card p-6 mb-8 flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
-            <div class="absolute inset-0 pointer-events-none opacity-20" style="background: url('images/noise.png');"></div>
+            <div class="absolute inset-0 pointer-events-none opacity-20" style="background: url('src/images/noise.png');"></div>
             <div class="flex items-center mb-4 md:mb-0">
                 <i class="fas fa-earth-americas text-4xl text-blue-500 mr-4"></i>
                 <div>
@@ -62,7 +62,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <!-- System Status Card -->
                 <div class="mica-neumorphic-card p-6">
-                    <div class="absolute inset-0 pointer-events-none opacity-20" style="background: url('images/noise.png');"></div>
+                    <div class="absolute inset-0 pointer-events-none opacity-20" style="background: url('src/images/noise.png');"></div>
                     <h2 class="text-xl font-semibold text-gray-700 mb-4">System Status</h2>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="mica-neumorphic-inset p-3 text-center">
@@ -95,7 +95,7 @@
                 </div>
                 <!-- Richter Scale Card -->
                 <div class="mica-neumorphic-card p-6">
-                    <div class="absolute inset-0 pointer-events-none opacity-20" style="background: url('images/noise.png');"></div>
+                    <div class="absolute inset-0 pointer-events-none opacity-20" style="background: url('src/images/noise.png');"></div>
                     <h2 class="text-xl font-semibold text-gray-700 mb-4">Earthquake Intensity</h2>
                     <div class="flex items-center justify-between">
                         <div class="text-center">
@@ -128,7 +128,7 @@
             </div>
             <!-- Data Log Card -->
             <div class="mica-neumorphic-card p-6">
-                <div class="absolute inset-0 pointer-events-none opacity-20" style="background: url('images/noise.png');"></div>
+                <div class="absolute inset-0 pointer-events-none opacity-20" style="background: url('src/images/noise.png');"></div>
                 <h2 class="text-xl font-semibold text-gray-700 mb-4">Data Log</h2>
                 <div class="mica-neumorphic-inset p-4 log-container" id="data-log">
                     <div class="text-gray-500 text-sm">Waiting for data...</div>
@@ -139,7 +139,7 @@
         <!-- 3D IMU Visual Tab -->
         <div id="imu-visual" class="tab-content">
             <div class="mica-neumorphic-card p-6">
-                <div class="absolute inset-0 pointer-events-none opacity-20" style="background: url('images/noise.png');"></div>
+                <div class="absolute inset-0 pointer-events-none opacity-20" style="background: url('src/images/noise.png');"></div>
                 <h2 class="text-xl font-semibold text-gray-700 mb-4">3D IMU Visualization</h2>
                 <div class="imu-visual-grid">
                     <div class="imu-cube-container">
@@ -210,12 +210,12 @@
         <div id="sensor-graphs" class="tab-content">
             <div class="w-full max-w-2xl mx-auto flex flex-col gap-8 px-2 sm:px-4">
                 <div class="mica-neumorphic-card p-4 sm:p-6">
-                    <div class="absolute inset-0 pointer-events-none opacity-20" style="background: url('images/noise.png');"></div>
+                    <div class="absolute inset-0 pointer-events-none opacity-20" style="background: url('src/images/noise.png');"></div>
                     <h2 class="text-xl font-semibold text-gray-700 mb-4 text-center">Accelerometer Data</h2>
                     <canvas id="accelChart" class="w-full" height="100"></canvas>
                 </div>
                 <div class="mica-neumorphic-card p-4 sm:p-6">
-                    <div class="absolute inset-0 pointer-events-none opacity-20" style="background: url('images/noise.png');"></div>
+                    <div class="absolute inset-0 pointer-events-none opacity-20" style="background: url('src/images/noise.png');"></div>
                     <h2 class="text-xl font-semibold text-gray-700 mb-4 text-center">Gyroscope Data</h2>
                     <canvas id="gyroChart" class="w-full" height="100"></canvas>
             </div>
@@ -226,7 +226,7 @@
         <div id="vibration-details" class="tab-content">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="mica-neumorphic-card p-6">
-                    <div class="absolute inset-0 pointer-events-none opacity-20" style="background: url('images/noise.png');"></div>
+                    <div class="absolute inset-0 pointer-events-none opacity-20" style="background: url('src/images/noise.png');"></div>
                     <h2 class="text-xl font-semibold text-gray-700 mb-4">Vibration Sensor</h2>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="mica-neumorphic-inset p-4">
@@ -248,7 +248,7 @@
                     </div>
                 </div>
                 <div class="mica-neumorphic-card p-6">
-                    <div class="absolute inset-0 pointer-events-none opacity-20" style="background: url('images/noise.png');"></div>
+                    <div class="absolute inset-0 pointer-events-none opacity-20" style="background: url('src/images/noise.png');"></div>
                     <h2 class="text-xl font-semibold text-gray-700 mb-4">SW1801P Sensor</h2>
                     <div class="flex flex-col items-center justify-center h-full">
                         <div class="text-center mb-4">
@@ -269,11 +269,10 @@
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/4.3.7/mqtt.min.js"></script>
-    <script src="src/js/main.js"></script>
-    <script src="src/js/mqtt.js"></script>
-    <script src="src/js/ui.js"></script>
-    <!-- Tambahkan Chart.js CDN di sini -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+    <script src="src/js/ui.js"></script>
+    <script src="src/js/mqtt.js"></script>
     <script src="src/js/chart.js"></script>
+    <script src="src/js/main.js"></script>
 </body>
 </html>

@@ -385,8 +385,13 @@ body.dark .status-dot.pulse {
   animation: fadeIn 0.5s;
 }
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+  opacity: 0;
 }
 
 .imu-cube-container {
@@ -585,6 +590,63 @@ body.dark .mica-neumorphic-inset p {
 }
 body.dark .mica-neumorphic-card .seven-segment,
 body.dark .mica-neumorphic-inset .seven-segment {
-  color: #7eb6ff;
-  text-shadow: 0 0 8px #2a3a5e, 0 2px 8px #1a2a4a;
+  color: #60a5fa;
+}
+
+/* Dark mode styles for login page */
+body.dark input[type="text"] {
+  background: rgba(30, 34, 60, 0.8) !important;
+  border-color: rgba(180, 200, 255, 0.2) !important;
+  color: #e0e6ff !important;
+}
+
+body.dark input[type="text"]::placeholder {
+  color: rgba(224, 230, 255, 0.6) !important;
+}
+
+body.dark input[type="text"]:focus {
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2) !important;
+}
+
+body.dark #login-error {
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  color: #fca5a5 !important;
+}
+
+/* Shake animation for form validation */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Ripple effect for buttons */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  transform: scale(0);
+  animation: ripple-animation 0.6s linear;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes ripple-animation {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Enhanced focus states */
+input:focus, button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 } 

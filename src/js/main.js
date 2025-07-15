@@ -1,8 +1,18 @@
 // Redirect ke login jika belum ada topic
 const imuTopic = localStorage.getItem('imuTopic');
 const vibrationTopic = localStorage.getItem('vibrationTopic');
+
+console.log('[MAIN] Available topics:', { imuTopic, vibrationTopic });
+
 if (!imuTopic && !vibrationTopic) {
+  console.log('[MAIN] No topics found, redirecting to login');
   window.location.href = 'login.html';
+}
+
+// Refresh MQTT topics after login redirect
+if (window.mqttHelper && window.mqttHelper.refreshTopics) {
+  console.log('[MAIN] Refreshing MQTT topics');
+  window.mqttHelper.refreshTopics();
 }
 
 // Tab Navigation
@@ -54,6 +64,20 @@ if (audioToggleButton) {
 
 updateAudioIcon();
 
+// Refresh Topics Button
+const refreshTopicsBtn = document.getElementById('refresh-topics-btn');
+if (refreshTopicsBtn && window.mqttHelper) {
+  refreshTopicsBtn.addEventListener('click', () => {
+    console.log('[MAIN] Manual refresh topics requested');
+    window.mqttHelper.refreshTopics();
+    if (window.uiHelper) {
+      window.uiHelper.addToLog('Manual topic refresh requested');
+      window.uiHelper.addToLog(`Current IMU Topic: ${localStorage.getItem('imuTopic') || 'Not set'}`);
+      window.uiHelper.addToLog(`Current Vibration Topic: ${localStorage.getItem('vibrationTopic') || 'Not set'}`);
+    }
+  });
+}
+
 // Dark mode switcher
 const darkModeToggle = document.getElementById('dark-mode-toggle');
 const darkModeIcon = document.getElementById('dark-mode-icon');
@@ -84,6 +108,11 @@ if (localStorage.getItem('darkMode') === '1') {
 
 // Inisialisasi MQTT dan data handler
 if (window.mqttHelper && window.uiHelper && window.charts) {
+  console.log('[MAIN] Initializing MQTT with topics:', {
+    imuTopic: localStorage.getItem('imuTopic'),
+    vibrationTopic: localStorage.getItem('vibrationTopic')
+  });
+  
   let beepInterval = null;
   function startBeeping() {
     if (!beepInterval && !isMuted) {
@@ -149,6 +178,16 @@ if (window.mqttHelper && window.uiHelper && window.charts) {
     const voltagePercentage = (data.sw1801p_voltage / 3300) * 100;
     document.getElementById('voltage-bar').style.width = `${voltagePercentage}%`;
   }
+  
+  // Subscribe to topics with current localStorage values
   window.mqttHelper.subscribeTopics(processImuData, processVibrationData, window.uiHelper.addToLog);
   window.uiHelper.addToLog('System initialized. Connecting to MQTT broker...');
+  window.uiHelper.addToLog(`IMU Topic: ${localStorage.getItem('imuTopic') || 'Not set'}`);
+  window.uiHelper.addToLog(`Vibration Topic: ${localStorage.getItem('vibrationTopic') || 'Not set'}`);
+} else {
+  console.error('[MAIN] Required helpers not available:', {
+    mqttHelper: !!window.mqttHelper,
+    uiHelper: !!window.uiHelper,
+    charts: !!window.charts
+  });
 } 
