@@ -12,7 +12,7 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen?style=for-the-badge)]()
 
-[🚀 Quick Start](#-quick-start) • [📋 Features](#-features) • [🛠️ Installation](#️-installation) • [📊 Architecture](#-system-architecture) • [🔬 Technical Details](#-technical-specifications)
+[🚀 Quick Start](#-quick-start-web-dashboard) • [📋 Features](#-uiux--dashboard-features-v21) • [🛠️ Installation](#️-installation) • [📊 Architecture](#-system-architecture) • [🔬 Technical Details](#-technical-specifications)
 
 ---
 
@@ -21,6 +21,14 @@
 ## 📖 About Project
 
 **WONDER** is an advanced IoT-based earthquake monitoring system that provides real-time detection, analysis, and alerting capabilities. The system combines multiple sensor technologies to deliver accurate earthquake intensity measurements and comprehensive monitoring through web and mobile interfaces.
+
+### 🖼️ Prototype Reference
+![WONDER 2.1 Prototype](src/images/proto.jpg)
+*Physical prototype showing ESP32 board with connected sensors and buzzer system*
+
+### 🗺️ Schematic Diagram
+![WONDER 2.1 Schematic](/src/images/schematic/Schematic_iot_esp32_gempa.png)
+*Complete wiring diagram showing all component connections and pin assignments*
 
 ### 🎯 Objectives
 - Provide accurate earthquake detection using peak-to-peak amplitude analysis
@@ -122,7 +130,8 @@ Akses di: http://localhost:8000/login.html
 
 ### 2️⃣ Login MQTT
 - Buka `login.html` (bukan langsung index.html!)
-- Masukkan topic MQTT (IMU wajib, vibration opsional)
+- Masukkan **topik MQTT apapun** sesuai kebutuhan Anda (IMU wajib, vibration opsional)
+- Topik sepenuhnya custom, tidak ada batasan format atau hardcoded
 - Setelah login, akan otomatis redirect ke dashboard (`index.html`)
 
 ### 3️⃣ Pastikan resource lokal tersedia
@@ -131,7 +140,7 @@ Akses di: http://localhost:8000/login.html
 
 ### 4️⃣ MQTT
 - Gunakan broker public (misal: broker.emqx.io:1883) atau private
-- Masukkan topic MQTT di halaman login
+- Masukkan **topik MQTT custom** di halaman login (bisa topik IMU dan/atau vibration sesuai device Anda)
 
 ---
 
@@ -146,7 +155,7 @@ Akses di: http://localhost:8000/login.html
 
 2. **🌐 Akses Dashboard**
    - Buka `login.html` di browser (bukan langsung index.html)
-   - Login dengan topic MQTT
+   - Login dengan **topik MQTT custom** (bisa topik IMU dan/atau vibration apapun)
    - Setelah login, akan otomatis masuk ke dashboard (`index.html`)
    - Tunggu koneksi MQTT, lalu monitor data real-time
 
@@ -205,7 +214,7 @@ Akses di: http://localhost:8000/login.html
 | **MQTT Broker** | broker.emqx.io | Public EMQX broker |
 | **Port** | 1883 | Standard MQTT port |
 | **Client ID** | esp32-client | Unique identifier |
-| **Topics** | MOCH/SHULTAN/163231040/* | Namespace structure |
+| **Topics** | Custom (user-defined) | MQTT topic(s) for IMU and vibration data |
 | **QoS** | 0 | At most once delivery |
 
 ### 📱 **App Specifications**
