@@ -792,8 +792,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ### 🌟 **Star History**
 
-[![Star History Chart](https://api.star-history.com/svg?repos=mochshultan/wonder-iot&type=Date)](https://star-history.com/#mochshultan/wonder-iot&Date)
-
+[![Star History Chart](https://api.star-history.com/svg?repos=mochshultan/wonder-iot&type=Timeline)](https://www.star-history.com/#mochshultan/wonder-iot&Timeline)
 ---
 
 <div align="center">
