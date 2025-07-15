@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌍 WONDER v2.1
+# 🌍 WONDER v.1.1
 ## Wireless Observation for Natural Detection Earthquake Response
 
 > **IoT-based earthquake monitoring system with real-time detection, analysis, and alerting capabilities**
@@ -107,12 +107,12 @@
 ### 🔧 **Hardware Setup**
 
 #### **Prototype Reference**
-![WONDER 2.1 Prototype](images/proto.jpg)
+![WONDER .1.1 Prototype](images/proto.jpg)
 
 *Physical prototype showing ESP32 board with connected sensors and buzzer system*
 
 #### **Schematic Diagram**
-![WONDER 2.1 Schematic](schematic/Schematic_iot_esp32_gempa.png)
+![WONDER .1.1 Schematic](schematic/Schematic_iot_esp32_gempa.png)
 
 *Complete wiring diagram showing all component connections and pin assignments*
 
@@ -245,7 +245,7 @@ File: android/app-release.apk (939KB)
 
 ## 🏗️ System Architecture
 
-![WONDER 2.1 System Architecture](images/system-architecture.svg)
+![WONDER .1.1 System Architecture](images/system-architecture.svg)
 
 *System architecture showing ESP32 board, sensors, data processing, and output platforms*
 
@@ -260,7 +260,7 @@ File: android/app-release.apk (939KB)
 | **Memory** | 520 KB SRAM | 4 MB Flash storage |
 | **ADC Resolution** | 12-bit | 0-4095 range |
 | **I2C Frequency** | Default | Standard I2C speed |
-| **WiFi** | 802.11 b/g/n | Auto-reconnect enabled |
+| **WiFi** | 80.1.11 b/g/n | Auto-reconnect enabled |
 | **MQTT Buffer** | 1024 bytes | Message buffer size |
 
 ### 📡 **Sensor Specifications**
@@ -283,8 +283,8 @@ File: android/app-release.apk (939KB)
 ### 📱 **App Specifications**
 | Platform | Version | Size | Package |
 |----------|---------|------|---------|
-| **Android APK** | 2.1 | 939KB | com.bangtanniot.wonder |
-| **Android AAB** | 2.1 | 1.0MB | com.bangtanniot.wonder |
+| **Android APK** | .1.1 | 939KB | com.bangtanniot.wonder |
+| **Android AAB** | .1.1 | 1.0MB | com.bangtanniot.wonder |
 | **Web Dashboard** | 1.0 | 32KB | HTML5 application |
 
 ---
@@ -425,7 +425,7 @@ void detectPeaks(float accelMagnitude) {
 ## 📂 Project Structure
 
 ```
-WONDER 2.1/
+WONDER .1.1/
 ├── 📁 android/                    # Android application files
 │   ├── 📱 app-release.apk        # Installable APK (939KB)
 │   ├── 📦 app-release.aab        # App Bundle (1.0MB)
