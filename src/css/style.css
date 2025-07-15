@@ -650,3 +650,11 @@ input:focus, button:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 } 
+
+/* Android WebView performance fix */
+body.android-webview .bg-blob {
+  filter: blur(24px) saturate(110%) !important;
+  opacity: 0.22 !important;
+  animation-duration: 40s !important;
+  transition: none !important;
+} 

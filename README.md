@@ -551,11 +551,10 @@ WONDER-2.1/
 │   └── only-imu/              # IMU-only firmware
 │       └── only-imu.ino       # Simplified firmware (MPU6050 only)
 ├── android/                    # Android application files
-│   ├── apps/                  # Generated APK/AAB files
+│   ├── apps                   # Generated APK & AAB files
 │   ├── certification.txt      # App certification details
 │   ├── license.txt           # App license information
-│   ├── readme.txt            # Android app documentation
-│   └── WebIntoApp URLs       # App builder references
+│   └── readme.txt            # Android app documentation
 ├── src/
 │   ├── css/
 │   │   └── style.css         # Modular CSS (Tailwind + custom)

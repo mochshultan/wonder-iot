@@ -1,3 +1,8 @@
+// Android WebView performance fix: add class to body
+if (/android/i.test(navigator.userAgent)) {
+  document.body.classList.add('android-webview');
+}
+
 // Redirect ke login jika belum ada topic
 const imuTopic = localStorage.getItem('imuTopic');
 const vibrationTopic = localStorage.getItem('vibrationTopic');

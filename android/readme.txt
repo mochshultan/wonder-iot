@@ -1,17 +1,17 @@
 
 FREE APP
 
-Created by WebIntoApp.com on Monday 30th of June 2025 02:19:24 PM.
+Created by WebIntoApp.com on Wednesday 16th of July 2025 01:14:14 AM.
 
 Release APK & App Bundle (AAB) ready to be submitted to Google Play Store 
 and to any other APK / AAB store over the internet.
 
 -------------------------------------
-App ID:			814528
-App Key:		uiQDObYMDjrBFjveSGArCUmhvwpMPGld
+App ID:			838052
+App Key:		wxWOjbmFkNPmEJfwjOnnpVPolMgghbmJ
 App Name:		WONDER
 App Version:	2.1
-Package:		com.bangtanniot.wonder
+Package:		com.mochshultan.wonder
 Mode:			Free App
 -------------------------------------
 
@@ -23,7 +23,7 @@ Please note, your app is under a FREE mode, you can always
 convert it to your own dedicated and branded mobile app for 
 Android and iOS with all the premium features at:
 
-https://webintoapp.com/author/apps/814528/edit?cmd=app-switcher
+https://webintoapp.com/author/apps/838052/edit?cmd=app-switcher
 
 -------------------------------------
 Here are some useful links:
@@ -33,7 +33,7 @@ You can edit your app at:
 https://webintoapp.com/author/apps
 
 Get installs statistics at:
-https://webintoapp.com/author/stats?appid=814528
+https://webintoapp.com/author/stats?appid=838052
 
 The Author Area:
 https://webintoapp.com/author/dashboard
