@@ -368,7 +368,7 @@ WONDER-2.1/
 │   ├── css/style.css           # Modular CSS (Tailwind + custom)
 │   ├── js/                     # Modular JS (main.js, mqtt.js, ui.js, chart.js, login.js)
 │   └── images/                 # Project diagrams, noise, and images
-├── schematic/                  # Hardware schematics and wiring
+│       └──schematic/           # Hardware schematics and wiring
 ├── index.html                  # Web dashboard utama (redirect dari login)
 ├── login.html                  # Halaman login MQTT (wajib akses pertama)
 ├── LICENSE
