@@ -95,116 +95,43 @@
 
 ---
 
-## 🚀 Quick Start
+## 🌟 UI/UX & Dashboard Features (v2.1)
+- Modern glassmorphism (mica) + neumorphic design
+- Animated, responsive background (gradient, shimmer, noise)
+- Dark mode toggle (dengan localStorage)
+- Modular tab navigation (Dashboard, Vibration, 3D IMU, Graphs)
+- 3D IMU cube visualization (responsive, proporsional)
+- Seven-segment font untuk data utama
+- Real-time MQTT status (broker/client) dengan indikator
+- Data log, grafik, dan panel data dengan efek glassmorphism-inset
+- Semua resource (noise, font, dsb) sudah lokal, tidak ada 404
+- Kode CSS & JS sudah modular (src/css, src/js)
 
-### 📋 **Prerequisites**
-- ESP32 development board
-- MPU6050, SW420, SW1801P sensors
-- Arduino IDE 2.0+
-- WiFi connection
-- MQTT broker access
+---
 
-### 🔧 **Hardware Setup**
+## 🚀 Quick Start (Web Dashboard)
 
-#### **Prototype Reference**
-![WONDER 2.1 Prototype](images/proto.jpg)
-
-*Physical prototype showing ESP32 board with connected sensors and buzzer system*
-
-#### **Schematic Diagram**
-![WONDER 2.1 Schematic](schematic/Schematic_iot_esp32_gempa.png)
-
-*Complete wiring diagram showing all component connections and pin assignments*
-
-#### **Sensor Connections**
-```
-MPU6050:
-├── VCC → 3.3V
-├── GND → GND
-├── SDA → GPIO 21
-└── SCL → GPIO 22
-
-SW420:
-├── VCC → 3.3V
-├── GND → GND
-└── OUT → GPIO 19
-
-SW1801P:
-├── VCC → 3.3V
-├── GND → GND
-└── OUT → GPIO 34 (ADC1_CH6)
-
-Buzzers:
-├── Buzzer 1 → GPIO 12
-└── Buzzer 2 → GPIO 14
-```
-
-### 💻 **Software Installation**
-
-#### 1️⃣ **Install Arduino Libraries**
+### 1️⃣ Jalankan server lokal (wajib, agar resource termuat dengan benar)
 ```bash
-# Arduino IDE Library Manager
-Tools → Manage Libraries:
-├── WiFiManager
-├── PubSubClient
-├── Adafruit MPU6050
-└── Adafruit Unified Sensor
-```
-
-#### 2️⃣ **Configure WiFi Settings**
-```cpp
-// Update in esp32-imu.ino
-const char* ssid = "YOUR_WIFI_SSID";
-const char* password = "YOUR_WIFI_PASSWORD";
-```
-
-#### 3️⃣ **Upload Firmware**
-```bash
-# Select board
-Tools → Board → ESP32 Arduino → ESP32 Dev Module
-
-# Configure settings
-Tools → Upload Speed → 115200
-Tools → Port → [Select ESP32 COM port]
-
-# Upload
-Sketch → Upload
-```
-
-### 🌐 **Web Dashboard Setup**
-
-#### **Local Deployment**
-```bash
-# Python HTTP server
+# Python
 python -m http.server 8000
-
-# Or Node.js
+# atau Node.js
 npx http-server -p 8000
-
-# Access dashboard
-http://localhost:8000
 ```
+Akses di: http://localhost:8000/login.html
 
-#### **MQTT Configuration**
-- **Broker**: `broker.emqx.io:1883`
-- **Topics**: 
-  - `YOUR_MQTT_TOPIC/data` (IMU data)
-  - `YOUR_MQTT_TOPIC/vibration` (Vibration data)
-- **Auto-connect**: Enabled
+### 2️⃣ Login MQTT
+- Buka `login.html` (bukan langsung index.html!)
+- Masukkan topic MQTT (IMU wajib, vibration opsional)
+- Setelah login, akan otomatis redirect ke dashboard (`index.html`)
 
-### 📱 **Android App Installation**
+### 3️⃣ Pastikan resource lokal tersedia
+- Semua gambar, noise, dsb, ada di folder `src/images/`
+- CSS & JS modular ada di `src/`
 
-#### **Install APK**
-```bash
-# Enable unknown sources
-Settings → Security → Unknown Sources
-
-# Install APK
-adb install android/app-release.apk
-
-# Or download manually
-File: android/app-release.apk (939KB)
-```
+### 4️⃣ MQTT
+- Gunakan broker public (misal: broker.emqx.io:1883) atau private
+- Masukkan topic MQTT di halaman login
 
 ---
 
@@ -217,10 +144,11 @@ File: android/app-release.apk (939KB)
    - Power ESP32 with stable 3.3V supply
    - Place device on stable surface
 
-2. **🌐 Access Dashboard**
-   - Open `index.html` in web browser
-   - Wait for MQTT connection to establish
-   - Monitor real-time sensor data
+2. **🌐 Akses Dashboard**
+   - Buka `login.html` di browser (bukan langsung index.html)
+   - Login dengan topic MQTT
+   - Setelah login, akan otomatis masuk ke dashboard (`index.html`)
+   - Tunggu koneksi MQTT, lalu monitor data real-time
 
 3. **📊 View Data**
    - **Richter Scale**: Real-time earthquake intensity
@@ -245,7 +173,7 @@ File: android/app-release.apk (939KB)
 
 ## 🏗️ System Architecture
 
-![WONDER 2.1 System Architecture](images/system-architecture.svg)
+![WONDER 2.1 System Architecture](src/images/system-architecture.svg)
 
 *System architecture showing ESP32 board, sensors, data processing, and output platforms*
 
@@ -293,7 +221,7 @@ File: android/app-release.apk (939KB)
 
 ### 🔄 **Real-time Data Pipeline**
 
-![Real-time Data Flow](images/data-flow.svg)
+![Real-time Data Flow](src/images/data-flow.svg)
 
 *Real-time data flow showing sensor readings, processing pipeline, and output distribution*
 
@@ -425,25 +353,18 @@ void detectPeaks(float accelMagnitude) {
 ## 📂 Project Structure
 
 ```
-WONDER 2.1/
-├── 📁 android/                    # Android application files
-│   ├── 📱 app-release.apk        # Installable APK (939KB)
-│   ├── 📦 app-release.aab        # App Bundle (1.0MB)
-│   ├── 🔑 my-release-key.jks     # Signing key
-│   ├── 📄 certification.txt      # App certification
-│   ├── 📄 license.txt           # License information
-│   ├── 📄 readme.txt            # App documentation
-│   └── 🔗 WebIntoApp URLs       # Development platform links
-├── 📁 images/                     # Project diagrams and images
-│   ├── 🏗️ system-architecture.svg # System architecture diagram
-│   └── 📊 data-flow.svg          # Real-time data flow diagram
-├── 📁 schematic/                  # Hardware schematics and wiring
-│   └── 🔌 Schematic_iot_esp32_gempa.png # Complete wiring diagram
-├── 🔧 esp32-imu.ino             # ESP32 firmware (690 lines)
-├── 🌐 index.html                # Web dashboard (647 lines)
-├── 📸 proto.jpg                 # Project prototype image (5.2MB)
-├── 📄 LICENSE                   # MIT License file
-└── 📖 README.md                 # Project documentation
+WONDER-2.1/
+├── android/                    # Android application files
+├── src/
+│   ├── css/style.css           # Modular CSS (Tailwind + custom)
+│   ├── js/                     # Modular JS (main.js, mqtt.js, ui.js, chart.js, login.js)
+│   └── images/                 # Project diagrams, noise, and images
+├── schematic/                  # Hardware schematics and wiring
+├── index.html                  # Web dashboard utama (redirect dari login)
+├── login.html                  # Halaman login MQTT (wajib akses pertama)
+├── LICENSE
+├── README.md
+└── ...
 ```
 
 ---
