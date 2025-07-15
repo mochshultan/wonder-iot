@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌍 WONDER v2.1
+# 🌍 WONDER v.2.1
 ## Wireless Observation for Natural Detection Earthquake Response
 
 > **IoT-based earthquake monitoring system with real-time detection, analysis, and alerting capabilities**

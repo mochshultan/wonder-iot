@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - WONDER</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="src/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="w-full max-w-md p-8 bg-mica neumorphic shadow-lg rounded-2xl">
+            <div class="flex flex-col items-center mb-6">
+                <i class="fas fa-earth-americas text-4xl text-blue-500 mb-2"></i>
+                <h1 class="text-2xl font-bold text-gray-800 mb-1">WONDER</h1>
+                <p class="text-gray-600 text-center">Wireless Observation for Natural Detection Earthquake Response</p>
+            </div>
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label for="imu-topic" class="block text-gray-700 font-medium mb-1">IMU Topic (wajib salah satu)</label>
+                    <input type="text" id="imu-topic" name="imu-topic" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none bg-white bg-opacity-70" placeholder="Contoh: MOCH/SHULTAN/163231040/data">
+                </div>
+                <div>
+                    <label for="vibration-topic" class="block text-gray-700 font-medium mb-1">Vibration Topic (opsional)</label>
+                    <input type="text" id="vibration-topic" name="vibration-topic" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none bg-white bg-opacity-70" placeholder="Contoh: MOCH/SHULTAN/163231040/vibration">
+                </div>
+                <div id="login-error" class="text-red-500 text-sm hidden">Minimal satu topic harus diisi.</div>
+                <button type="submit" class="w-full py-3 mt-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold shadow-md hover:from-purple-500 hover:to-blue-500 transition">Login</button>
+            </form>
+        </div>
+    </div>
+    <script src="src/js/mqtt.min.js"></script>
+    <script src="src/js/login.js"></script>
+</body>
+</html> 
